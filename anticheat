@@ -1,5 +1,6 @@
 -- Services
 local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
 
 -- GUI контейнер
 local ScreenGui = Instance.new("ScreenGui")
@@ -17,16 +18,16 @@ local UICorner = Instance.new("UICorner")
 UICorner.CornerRadius = UDim.new(0, 10)
 UICorner.Parent = Frame
 
--- Надпись "Test"
+-- Надпись "TradeLock v.1.7"
 local Title = Instance.new("TextLabel")
 Title.Parent = Frame
-Title.Text = "Test"
+Title.Text = "TradeLock v.1.7"
 Title.Font = Enum.Font.GothamBold
 Title.TextSize = 16
 Title.TextColor3 = Color3.fromRGB(255, 255, 255)
 Title.BackgroundTransparency = 1
 Title.Position = UDim2.new(0, 10, 0, 5)
-Title.Size = UDim2.new(0, 100, 0, 20)
+Title.Size = UDim2.new(0, 150, 0, 20)
 Title.TextXAlignment = Enum.TextXAlignment.Left
 
 -- Кнопка "Настройки"
@@ -74,64 +75,119 @@ local darkTradeCorner = Instance.new("UICorner")
 darkTradeCorner.CornerRadius = UDim.new(0, 8)
 darkTradeCorner.Parent = DarkTradeButton
 
--- Тумблер TradeLag (создаётся сразу, но скрыт)
+-- Тумблер TradeLag (скрыт до загрузки)
 local TradeLagButton = Instance.new("TextButton")
 TradeLagButton.Parent = Frame
-TradeLagButton.Size = UDim2.new(0, 100, 0, 30)
+TradeLagButton.Size = UDim2.new(0, 60, 0, 30) -- уменьшили ширину для текста справа
 TradeLagButton.Position = UDim2.new(0, 10, 0, 40)
 TradeLagButton.Font = Enum.Font.GothamBold
 TradeLagButton.TextSize = 14
 TradeLagButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-TradeLagButton.BackgroundColor3 = Color3.fromRGB(200, 0, 0) -- старт: OFF
+TradeLagButton.BackgroundColor3 = Color3.fromRGB(200, 0, 0) -- OFF красный
 TradeLagButton.Text = "OFF"
-TradeLagButton.Visible = false -- скрыт до конца загрузки
+TradeLagButton.Visible = false
 
 local toggleCorner = Instance.new("UICorner")
 toggleCorner.CornerRadius = UDim.new(0, 8)
 toggleCorner.Parent = TradeLagButton
 
--- Переключение тумблера
+-- Надпись "TradeLag" справа от кнопки
+local TradeLagLabel = Instance.new("TextLabel")
+TradeLagLabel.Parent = Frame
+TradeLagLabel.Size = UDim2.new(0, 70, 0, 30)
+TradeLagLabel.Position = UDim2.new(0, 80, 0, 40) -- справа от тумблера
+TradeLagLabel.BackgroundTransparency = 1
+TradeLagLabel.Text = "TradeLag"
+TradeLagLabel.Font = Enum.Font.GothamBold
+TradeLagLabel.TextSize = 16
+TradeLagLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+TradeLagLabel.Visible = false -- показываем одновременно с тумблером
+
+-- Переключатель тумблера
 local toggled = false
 TradeLagButton.MouseButton1Click:Connect(function()
-    toggled = not toggled
-    if toggled then
-        TradeLagButton.BackgroundColor3 = Color3.fromRGB(0, 200, 0) -- ЗЕЛЁНЫЙ
-        TradeLagButton.Text = "ON"
-    else
-        TradeLagButton.BackgroundColor3 = Color3.fromRGB(200, 0, 0) -- КРАСНЫЙ
-        TradeLagButton.Text = "OFF"
-    end
+	toggled = not toggled
+	if toggled then
+		TradeLagButton.BackgroundColor3 = Color3.fromRGB(0, 200, 0) -- зелёный
+		TradeLagButton.Text = "ON"
+	else
+		TradeLagButton.BackgroundColor3 = Color3.fromRGB(200, 0, 0) -- красный
+		TradeLagButton.Text = "OFF"
+	end
 end)
 
 -- Анимация прогресс-бара (6 секунд)
 local tweenInfo = TweenInfo.new(
-    6,
-    Enum.EasingStyle.Linear,
-    Enum.EasingDirection.Out
+	6,
+	Enum.EasingStyle.Linear,
+	Enum.EasingDirection.Out
 )
 
 local goal = {Size = UDim2.new(1, 0, 0, 20)}
 local tween = TweenService:Create(LoadingBar, tweenInfo, goal)
 tween:Play()
 
--- После загрузки скрываем прогресс-бар и показываем тумблер
+-- После загрузки скрываем прогресс-бар и показываем тумблер и надпись
 tween.Completed:Connect(function()
-    LoadingBar.Visible = false
-    TradeLagButton.Visible = true
+	LoadingBar.Visible = false
+	TradeLagButton.Visible = true
+	TradeLagLabel.Visible = true
 end)
 
 -- Скрытие/показ меню через крестик / DarkTrade
 CloseButton.MouseButton1Click:Connect(function()
-    Frame.Visible = false
-    DarkTradeButton.Visible = true
+	Frame.Visible = false
+	DarkTradeButton.Visible = true
 end)
 
 DarkTradeButton.MouseButton1Click:Connect(function()
-    Frame.Visible = true
-    DarkTradeButton.Visible = false
+	Frame.Visible = true
+	DarkTradeButton.Visible = false
 end)
 
 -- Настройки
 SettingsButton.MouseButton1Click:Connect(function()
-    print("Settings clicked")
+	print("Settings clicked")
+end)
+
+-- Перемещение меню (dragging)
+local dragging
+local dragInput
+local dragStart
+local startPos
+
+local function update(input)
+	local delta = input.Position - dragStart
+	Frame.Position = UDim2.new(
+		math.clamp(startPos.X.Scale, 0, 1),
+		math.clamp(startPos.X.Offset + delta.X, 0, workspace.CurrentCamera.ViewportSize.X - Frame.AbsoluteSize.X),
+		math.clamp(startPos.Y.Scale, 0, 1),
+		math.clamp(startPos.Y.Offset + delta.Y, 0, workspace.CurrentCamera.ViewportSize.Y - Frame.AbsoluteSize.Y)
+	)
+end
+
+Frame.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 then
+		dragging = true
+		dragStart = input.Position
+		startPos = Frame.Position
+
+		input.Changed:Connect(function()
+			if input.UserInputState == Enum.UserInputState.End then
+				dragging = false
+			end
+		end)
+	end
+end)
+
+Frame.InputChanged:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseMovement then
+		dragInput = input
+	end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+	if input == dragInput and dragging then
+		update(input)
+	end
 end)
