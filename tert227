@@ -1,267 +1,163 @@
-Отлично! Тогда вот готовый вариант скрипта под экзекутор (Synapse, Krnl и т.п.) с сохранением позиции и состояния кнопки **TradeLag** в файл.
-
----
-
-## Как работает скрипт:
-
-* Сохраняет позицию окна и состояние кнопки в файл `TradeLockConfig.txt` (формат Lua table).
-* Загружает эти данные при запуске.
-* Перетаскивание меню только за шапку.
-* Анимация открытия/закрытия.
-* Вся GUI логика работает на клиенте через `game.Players.LocalPlayer.PlayerGui`.
-
----
-
-```lua
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
-local Players = game:GetService("Players")
 
-local player = Players.LocalPlayer
-local playerGui = player:WaitForChild("PlayerGui")
+local player = game.Players.LocalPlayer or game:GetService("Players").LocalPlayer
+while not player do
+    wait()
+    player = game.Players.LocalPlayer or game:GetService("Players").LocalPlayer
+end
+local PlayerGui = player:WaitForChild("PlayerGui")
 
--- ===== Работа с файлами =====
-local configFileName = "TradeLockConfig.txt"
-
-local function fileExists(name)
-    local f = isfile and isfile(name)
-    return f
+-- Очистка, если уже есть такой GUI
+if PlayerGui:FindFirstChild("LoadingMenu") then
+    PlayerGui.LoadingMenu:Destroy()
 end
 
-local function readConfig()
-    if fileExists and fileExists(configFileName) then
-        local content = readfile(configFileName)
-        local success, data = pcall(function()
-            return loadstring("return "..content)()
-        end)
-        if success and type(data) == "table" then
-            return data
-        end
-    end
-    return nil
-end
-
-local function writeConfig(data)
-    if writefile then
-        local encoded = "return "..game:GetService("HttpService"):JSONEncode(data)
-        -- Немного заменим JSON на Lua синтаксис (уберём кавычки с ключей)
-        encoded = encoded:gsub('"(%w+)":', "%1 =")
-        writefile(configFileName, encoded)
-    end
-end
-
--- ===== Создание GUI =====
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "LoadingMenu"
-ScreenGui.Parent = playerGui
+ScreenGui.Parent = PlayerGui
 
 local Frame = Instance.new("Frame")
 Frame.Parent = ScreenGui
-Frame.Size = UDim2.new(0, 300, 0, 100)
-Frame.Position = UDim2.new(0.5, -150, 0.5, -50)
-Frame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+Frame.Size = UDim2.new(0, 350, 0, 120)
+Frame.Position = UDim2.new(0.5, -175, 0.5, -60)
+Frame.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
+Frame.BorderSizePixel = 0
 
-local FrameCorner = Instance.new("UICorner")
-FrameCorner.CornerRadius = UDim.new(0, 10)
-FrameCorner.Parent = Frame
+local UICorner = Instance.new("UICorner")
+UICorner.CornerRadius = UDim.new(0, 18)
+UICorner.Parent = Frame
 
--- ===== Шапка =====
-local Header = Instance.new("Frame")
-Header.Parent = Frame
-Header.Size = UDim2.new(1, 0, 0, 30)
-Header.BackgroundTransparency = 1
-Header.Name = "Header"
+local Gradient = Instance.new("UIGradient")
+Gradient.Color = ColorSequence.new{
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(120, 0, 255)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 200, 255))
+}
+Gradient.Rotation = 45
+Gradient.Parent = Frame
 
 local Title = Instance.new("TextLabel")
-Title.Parent = Header
+Title.Parent = Frame
 Title.Text = "TradeLock v.1.7"
 Title.Font = Enum.Font.GothamBold
-Title.TextSize = 16
+Title.TextSize = 20
 Title.TextColor3 = Color3.fromRGB(255, 255, 255)
 Title.BackgroundTransparency = 1
-Title.Position = UDim2.new(0, 10, 0, 5)
-Title.Size = UDim2.new(0, 150, 0, 20)
+Title.Position = UDim2.new(0, 15, 0, 12)
+Title.Size = UDim2.new(0, 200, 0, 25)
 Title.TextXAlignment = Enum.TextXAlignment.Left
+Title.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+Title.TextStrokeTransparency = 0.5
 
 local SettingsButton = Instance.new("ImageButton")
-SettingsButton.Parent = Header
-SettingsButton.Size = UDim2.new(0, 20, 0, 20)
-SettingsButton.Position = UDim2.new(1, -50, 0, 5)
+SettingsButton.Parent = Frame
+SettingsButton.Size = UDim2.new(0, 28, 0, 28)
+SettingsButton.Position = UDim2.new(1, -75, 0, 10)
 SettingsButton.BackgroundTransparency = 1
 SettingsButton.Image = "rbxassetid://6031280882"
+SettingsButton.AutoButtonColor = false
 
 local CloseButton = Instance.new("ImageButton")
-CloseButton.Parent = Header
-CloseButton.Size = UDim2.new(0, 20, 0, 20)
-CloseButton.Position = UDim2.new(1, -25, 0, 5)
+CloseButton.Parent = Frame
+CloseButton.Size = UDim2.new(0, 28, 0, 28)
+CloseButton.Position = UDim2.new(1, -35, 0, 10)
 CloseButton.BackgroundTransparency = 1
 CloseButton.Image = "rbxassetid://6031094678"
+CloseButton.AutoButtonColor = false
 
--- ===== Loading bar =====
+local LoadingBarBackground = Instance.new("Frame")
+LoadingBarBackground.Parent = Frame
+LoadingBarBackground.BackgroundColor3 = Color3.fromRGB(50, 50, 70)
+LoadingBarBackground.Position = UDim2.new(0, 15, 1, -35)
+LoadingBarBackground.Size = UDim2.new(1, -30, 0, 25)
+LoadingBarBackground.BorderSizePixel = 0
+local bgCorner = Instance.new("UICorner")
+bgCorner.CornerRadius = UDim.new(0, 12)
+bgCorner.Parent = LoadingBarBackground
+
 local LoadingBar = Instance.new("Frame")
-LoadingBar.Parent = Frame
-LoadingBar.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
-LoadingBar.Position = UDim2.new(0, 0, 1, -20)
-LoadingBar.Size = UDim2.new(0, 0, 0, 20)
+LoadingBar.Parent = LoadingBarBackground
+LoadingBar.BackgroundColor3 = Color3.fromRGB(170, 85, 255)
+LoadingBar.Size = UDim2.new(0, 0, 1, 0)
+LoadingBar.BorderSizePixel = 0
+local barCorner = Instance.new("UICorner")
+barCorner.CornerRadius = UDim.new(0, 12)
+barCorner.Parent = LoadingBar
 
-local BarCorner = Instance.new("UICorner")
-BarCorner.Parent = LoadingBar
-BarCorner.CornerRadius = UDim.new(0, 10)
-
--- ===== DarkTrade кнопка =====
 local DarkTradeButton = Instance.new("TextButton")
 DarkTradeButton.Name = "DarkTradeButton"
 DarkTradeButton.Parent = ScreenGui
-DarkTradeButton.Size = UDim2.new(0, 100, 0, 35)
-DarkTradeButton.Position = UDim2.new(1, -110, 0, 10)
-DarkTradeButton.BackgroundTransparency = 0.2
-DarkTradeButton.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+DarkTradeButton.Size = UDim2.new(0, 120, 0, 40)
+DarkTradeButton.Position = UDim2.new(1, -140, 0, 15)
+DarkTradeButton.BackgroundTransparency = 0.15
+DarkTradeButton.BackgroundColor3 = Color3.fromRGB(85, 0, 255)
 DarkTradeButton.Text = "DarkTrade"
 DarkTradeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-DarkTradeButton.TextSize = 16
+DarkTradeButton.TextSize = 18
 DarkTradeButton.Font = Enum.Font.GothamBold
 DarkTradeButton.Visible = false
+local darkTradeCorner = Instance.new("UICorner")
+darkTradeCorner.CornerRadius = UDim.new(0, 10)
+darkTradeCorner.Parent = DarkTradeButton
 
-local DarkTradeCorner = Instance.new("UICorner")
-DarkTradeCorner.CornerRadius = UDim.new(0, 8)
-DarkTradeCorner.Parent = DarkTradeButton
-
--- ===== TradeLag toggle =====
 local TradeLagButton = Instance.new("TextButton")
 TradeLagButton.Parent = Frame
-TradeLagButton.Size = UDim2.new(0, 60, 0, 30)
-TradeLagButton.Position = UDim2.new(0, 10, 0, 40)
+TradeLagButton.Size = UDim2.new(0, 70, 0, 35)
+TradeLagButton.Position = UDim2.new(0, 15, 0, 60)
 TradeLagButton.Font = Enum.Font.GothamBold
-TradeLagButton.TextSize = 14
+TradeLagButton.TextSize = 16
 TradeLagButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-TradeLagButton.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
+TradeLagButton.BackgroundColor3 = Color3.fromRGB(170, 0, 255)
 TradeLagButton.Text = "OFF"
 TradeLagButton.Visible = false
-
-local ToggleCorner = Instance.new("UICorner")
-ToggleCorner.CornerRadius = UDim.new(0, 8)
-ToggleCorner.Parent = TradeLagButton
+local toggleCorner = Instance.new("UICorner")
+toggleCorner.CornerRadius = UDim.new(0, 12)
+toggleCorner.Parent = TradeLagButton
 
 local TradeLagLabel = Instance.new("TextLabel")
 TradeLagLabel.Parent = Frame
-TradeLagLabel.Size = UDim2.new(0, 70, 0, 30)
-TradeLagLabel.Position = UDim2.new(0, 80, 0, 40)
+TradeLagLabel.Size = UDim2.new(0, 90, 0, 35)
+TradeLagLabel.Position = UDim2.new(0, 95, 0, 60)
 TradeLagLabel.BackgroundTransparency = 1
 TradeLagLabel.Text = "TradeLag"
 TradeLagLabel.Font = Enum.Font.GothamBold
-TradeLagLabel.TextSize = 16
+TradeLagLabel.TextSize = 18
 TradeLagLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 TradeLagLabel.Visible = false
 
--- ===== Состояния =====
 local toggled = false
-local savedPosition = Frame.Position
-
--- Попытка загрузить конфиг из файла
-local config = readConfig()
-if config then
-    if config.Position then
-        savedPosition = UDim2.new(config.Position.X.Scale, config.Position.X.Offset, config.Position.Y.Scale, config.Position.Y.Offset)
-    end
-    if config.TradeLagToggled ~= nil then
-        toggled = config.TradeLagToggled
-    end
-    -- Применяем сохранённое положение сразу
-    Frame.Position = savedPosition
-end
-
-local function UpdateTradeLagButton()
-    if toggled then
-        TradeLagButton.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
-        TradeLagButton.Text = "ON"
-    else
-        TradeLagButton.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
-        TradeLagButton.Text = "OFF"
-    end
-end
-
 TradeLagButton.MouseButton1Click:Connect(function()
-    toggled = not toggled
-    UpdateTradeLagButton()
-    -- Сохраняем состояние в файл
-    writeConfig({
-        Position = {
-            X = {Scale = Frame.Position.X.Scale, Offset = Frame.Position.X.Offset},
-            Y = {Scale = Frame.Position.Y.Scale, Offset = Frame.Position.Y.Offset},
-        },
-        TradeLagToggled = toggled
-    })
+	toggled = not toggled
+	if toggled then
+		TradeLagButton.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+		TradeLagButton.Text = "ON"
+	else
+		TradeLagButton.BackgroundColor3 = Color3.fromRGB(170, 0, 255)
+		TradeLagButton.Text = "OFF"
+	end
 end)
 
--- ===== Анимации =====
-local function ShowFrame()
-    Frame.Position = savedPosition
-    Frame.Visible = true
-    Frame.Size = UDim2.new(0, 0, 0, 100)
-    TweenService:Create(Frame, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {Size = UDim2.new(0, 300, 0, 100)}):Play()
-end
-
-local function HideFrame()
-    savedPosition = Frame.Position
-    local tween = TweenService:Create(Frame, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {Size = UDim2.new(0, 0, 0, 100)})
-    tween.Completed:Connect(function()
-        Frame.Visible = false
-        -- Сохраняем позицию и состояние при закрытии
-        writeConfig({
-            Position = {
-                X = {Scale = savedPosition.X.Scale, Offset = savedPosition.X.Offset},
-                Y = {Scale = savedPosition.Y.Scale, Offset = savedPosition.Y.Offset},
-            },
-            TradeLagToggled = toggled
-        })
-    end)
-    tween:Play()
-end
-
--- ===== Логика кнопок =====
-CloseButton.MouseButton1Click:Connect(function()
-    HideFrame()
-    DarkTradeButton.Visible = true
-end)
-
-DarkTradeButton.MouseButton1Click:Connect(function()
-    DarkTradeButton.Visible = false
-    ShowFrame()
-end)
-
-SettingsButton.MouseButton1Click:Connect(function()
-    print("Settings clicked")
-end)
-
--- ===== Загрузка и показ кнопок =====
 local tweenInfo = TweenInfo.new(6, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
-local goal = {Size = UDim2.new(1, 0, 0, 20)}
+local goal = {Size = UDim2.new(1, 0, 1, 0)}
 local tween = TweenService:Create(LoadingBar, tweenInfo, goal)
 tween:Play()
 
 tween.Completed:Connect(function()
-    LoadingBar.Visible = false
-    TradeLagButton.Visible = true
-    TradeLagLabel.Visible = true
-    UpdateTradeLagButton()
+	LoadingBarBackground.Visible = false
+	TradeLagButton.Visible = true
+	TradeLagLabel.Visible = true
 end)
 
--- ===== Перетаскивание только за шапку =====
-local dragging
-local dragInput
-local dragStart
-local startPos
+CloseButton.MouseButton1Click:Connect(function()
+	Frame.Visible = false
+	DarkTradeButton.Visible = true
+end)
 
-local function update(input)
-    local delta = input.Position - dragStart
-    Frame.Position = UDim2.new(
-        startPos.X.Scale,
-        startPos.X.Offset + delta.X,
-        startPos.Y.Scale,
-        startPos.Y.Offset + delta.Y
-    )
-end
+DarkTradeButton.MouseButton1Click:Connect(function()
+	Frame.Visible = true
+	DarkTradeButton.Visible = false
+end)
 
-Header.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1
-```
+SettingsButton.MouseButton1Click:Connect(function()
+	print("Settings clicked")
+end)
