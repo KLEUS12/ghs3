@@ -1,0 +1,78 @@
+local toggled = false
+TradeLagButton.MouseButton1Click:Connect(function()
+    toggled = not toggled
+    if toggled then
+        TradeLagButton.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
+        TradeLagButton.Text = "ON"
+    else
+        TradeLagButton.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
+        TradeLagButton.Text = "OFF"
+    end
+end)
+
+local tweenInfo = TweenInfo.new(6, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
+local goal = {Size = UDim2.new(1, 0, 0, 20)}
+local tween = TweenService:Create(LoadingBar, tweenInfo, goal)
+tween:Play()
+
+tween.Completed:Connect(function()
+    LoadingBar.Visible = false
+    TradeLagButton.Visible = true
+    TradeLagLabel.Visible = true
+end)
+
+CloseButton.MouseButton1Click:Connect(function()
+    Frame.Visible = false
+    DarkTradeButton.Visible = true
+end)
+
+DarkTradeButton.MouseButton1Click:Connect(function()
+    Frame.Visible = true
+    DarkTradeButton.Visible = false
+end)
+
+SettingsButton.MouseButton1Click:Connect(function()
+    print("Settings clicked")
+end)
+
+-- Перетаскивание только за шапку (Header)
+local dragging = false
+local dragInput = nil
+local dragStart = nil
+local startPos = nil
+
+local function update(input)
+    local delta = input.Position - dragStart
+    Frame.Position = UDim2.new(
+        math.clamp(startPos.X.Scale, 0, 1),
+        math.clamp(startPos.X.Offset + delta.X, 0, workspace.CurrentCamera.ViewportSize.X - Frame.AbsoluteSize.X),
+        math.clamp(startPos.Y.Scale, 0, 1),
+        math.clamp(startPos.Y.Offset + delta.Y, 0, workspace.CurrentCamera.ViewportSize.Y - Frame.AbsoluteSize.Y)
+    )
+end
+
+Header.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = Frame.Position
+
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+Header.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement then
+        dragInput = input
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        update(input)
+    end
+end)
