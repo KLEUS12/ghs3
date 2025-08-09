@@ -8,7 +8,6 @@ while not player do
 end
 local PlayerGui = player:WaitForChild("PlayerGui")
 
--- Очистка, если уже есть такой GUI
 if PlayerGui:FindFirstChild("LoadingMenu") then
     PlayerGui.LoadingMenu:Destroy()
 end
