@@ -1,230 +1,78 @@
-local TweenService = game:GetService("TweenService")
-local UserInputService = game:GetService("UserInputService")
+local toggled = false
+TradeLagButton.MouseButton1Click:Connect(function()
+    toggled = not toggled
+    if toggled then
+        TradeLagButton.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
+        TradeLagButton.Text = "ON"
+    else
+        TradeLagButton.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
+        TradeLagButton.Text = "OFF"
+    end
+end)
 
-local player = game.Players.LocalPlayer
-local playerGui = player:WaitForChild("PlayerGui")
+local tweenInfo = TweenInfo.new(6, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
+local goal = {Size = UDim2.new(1, 0, 0, 20)}
+local tween = TweenService:Create(LoadingBar, tweenInfo, goal)
+tween:Play()
 
--- Затемнённый фон для размытия заднего плана
-local Background = Instance.new("Frame")
-Background.Name = "Background"
-Background.Parent = playerGui
-Background.BackgroundColor3 = Color3.new(0, 0, 0)
-Background.BackgroundTransparency = 0.7
-Background.Size = UDim2.new(1, 0, 1, 0)
-Background.ZIndex = 0
-Background.Visible = false
-
--- Основное окно
-local Frame = Instance.new("Frame")
-Frame.Name = "MainFrame"
-Frame.Parent = playerGui
-Frame.Size = UDim2.new(0, 320, 0, 130)
-Frame.Position = UDim2.new(0.5, -160, 0.5, -65)
-Frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-Frame.AnchorPoint = Vector2.new(0.5, 0.5)
-Frame.ZIndex = 1
-Frame.Visible = false
-
-local UICorner = Instance.new("UICorner")
-UICorner.CornerRadius = UDim.new(0, 14)
-UICorner.Parent = Frame
-
--- Тень у окна (имитация)
-local Shadow = Instance.new("Frame")
-Shadow.Parent = Frame
-Shadow.Size = UDim2.new(1, 10, 1, 10)
-Shadow.Position = UDim2.new(0, 5, 0, 5)
-Shadow.BackgroundColor3 = Color3.new(0, 0, 0)
-Shadow.BackgroundTransparency = 0.7
-Shadow.ZIndex = 0
-Shadow.ClipsDescendants = false
-local shadowCorner = Instance.new("UICorner")
-shadowCorner.CornerRadius = UDim.new(0, 14)
-shadowCorner.Parent = Shadow
-
--- Заголовок (шапка)
-local Header = Instance.new("Frame")
-Header.Parent = Frame
-Header.Name = "Header"
-Header.Size = UDim2.new(1, 0, 0, 35)
-Header.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
-local headerCorner = Instance.new("UICorner")
-headerCorner.CornerRadius = UDim.new(0, 14)
-headerCorner.Parent = Header
-
--- Текст заголовка
-local Title = Instance.new("TextLabel")
-Title.Parent = Header
-Title.Text = "TradeLock v.1.7"
-Title.Font = Enum.Font.GothamBold
-Title.TextSize = 18
-Title.TextColor3 = Color3.fromRGB(230, 230, 230)
-Title.BackgroundTransparency = 1
-Title.Position = UDim2.new(0, 14, 0, 7)
-Title.Size = UDim2.new(0, 200, 0, 20)
-Title.TextXAlignment = Enum.TextXAlignment.Left
-
--- Кнопка закрытия с hover-эффектом
-local CloseButton = Instance.new("ImageButton")
-CloseButton.Parent = Header
-CloseButton.Size = UDim2.new(0, 24, 0, 24)
-CloseButton.Position = UDim2.new(1, -34, 0, 6)
-CloseButton.BackgroundTransparency = 1
-CloseButton.Image = "rbxassetid://6031094678"
-CloseButton.AutoButtonColor = false
-CloseButton.ZIndex = 2
-
-local function onHover(button)
-	local tween = TweenService:Create(button, TweenInfo.new(0.2), {BackgroundTransparency = 0.6})
-	tween:Play()
-end
-local function onLeave(button)
-	local tween = TweenService:Create(button, TweenInfo.new(0.2), {BackgroundTransparency = 1})
-	tween:Play()
-end
-
-CloseButton.MouseEnter:Connect(function() onHover(CloseButton) end)
-CloseButton.MouseLeave:Connect(function() onLeave(CloseButton) end)
+tween.Completed:Connect(function()
+    LoadingBar.Visible = false
+    TradeLagButton.Visible = true
+    TradeLagLabel.Visible = true
+end)
 
 CloseButton.MouseButton1Click:Connect(function()
-	local fadeOut = TweenService:Create(Frame, TweenInfo.new(0.3), {BackgroundTransparency = 1})
-	local fadeOutBg = TweenService:Create(Background, TweenInfo.new(0.3), {BackgroundTransparency = 1})
-	fadeOut:Play()
-	fadeOutBg:Play()
-	fadeOut.Completed:Wait()
-	Frame.Visible = false
-	Background.Visible = false
-	Frame.BackgroundTransparency = 0
-	Background.BackgroundTransparency = 0.7
-end)
-
--- Кнопка настроек
-local SettingsButton = Instance.new("ImageButton")
-SettingsButton.Parent = Header
-SettingsButton.Size = UDim2.new(0, 24, 0, 24)
-SettingsButton.Position = UDim2.new(1, -68, 0, 6)
-SettingsButton.BackgroundTransparency = 1
-SettingsButton.Image = "rbxassetid://6031280882"
-SettingsButton.AutoButtonColor = false
-SettingsButton.ZIndex = 2
-SettingsButton.MouseEnter:Connect(function() onHover(SettingsButton) end)
-SettingsButton.MouseLeave:Connect(function() onLeave(SettingsButton) end)
-SettingsButton.MouseButton1Click:Connect(function()
-	print("Настройки нажаты!")
-end)
-
--- Загрузка с прогресс-баром
-local LoadingBarBackground = Instance.new("Frame")
-LoadingBarBackground.Parent = Frame
-LoadingBarBackground.Size = UDim2.new(1, -28, 0, 22)
-LoadingBarBackground.Position = UDim2.new(0, 14, 1, -40)
-LoadingBarBackground.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-local loadingBgCorner = Instance.new("UICorner")
-loadingBgCorner.Parent = LoadingBarBackground
-loadingBgCorner.CornerRadius = UDim.new(0, 12)
-
-local LoadingBar = Instance.new("Frame")
-LoadingBar.Parent = LoadingBarBackground
-LoadingBar.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
-LoadingBar.Size = UDim2.new(0, 0, 1, 0)
-local barCorner = Instance.new("UICorner")
-barCorner.Parent = LoadingBar
-barCorner.CornerRadius = UDim.new(0, 12)
-
-local LoadingText = Instance.new("TextLabel")
-LoadingText.Parent = LoadingBarBackground
-LoadingText.Size = UDim2.new(1, 0, 1, 0)
-LoadingText.BackgroundTransparency = 1
-LoadingText.Font = Enum.Font.GothamBold
-LoadingText.TextSize = 16
-LoadingText.TextColor3 = Color3.fromRGB(255, 255, 255)
-LoadingText.Text = "Загрузка... 0%"
-LoadingText.TextStrokeTransparency = 0.7
-
--- Кнопка DarkTrade (скрыта пока)
-local DarkTradeButton = Instance.new("TextButton")
-DarkTradeButton.Name = "DarkTradeButton"
-DarkTradeButton.Parent = playerGui
-DarkTradeButton.Size = UDim2.new(0, 110, 0, 38)
-DarkTradeButton.Position = UDim2.new(1, -120, 0, 15)
-DarkTradeButton.BackgroundTransparency = 0.3
-DarkTradeButton.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
-DarkTradeButton.Text = "DarkTrade"
-DarkTradeButton.TextColor3 = Color3.fromRGB(230, 230, 230)
-DarkTradeButton.TextSize = 18
-DarkTradeButton.Font = Enum.Font.GothamBold
-DarkTradeButton.Visible = false
-local darkTradeCorner = Instance.new("UICorner")
-darkTradeCorner.CornerRadius = UDim.new(0, 10)
-darkTradeCorner.Parent = DarkTradeButton
-
-DarkTradeButton.MouseEnter:Connect(function()
-	DarkTradeButton.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
-end)
-DarkTradeButton.MouseLeave:Connect(function()
-	DarkTradeButton.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+    Frame.Visible = false
+    DarkTradeButton.Visible = true
 end)
 
 DarkTradeButton.MouseButton1Click:Connect(function()
-	Frame.Visible = true
-	Background.Visible = true
-	DarkTradeButton.Visible = false
+    Frame.Visible = true
+    DarkTradeButton.Visible = false
 end)
 
--- Функция анимации загрузочного бара с цифрами
-local function playLoading()
-	Background.Visible = true
-	Frame.Visible = true
-	Frame.BackgroundTransparency = 1
-	Background.BackgroundTransparency = 1
-	
-	local fadeInFrame = TweenService:Create(Frame, TweenInfo.new(0.4), {BackgroundTransparency = 0})
-	local fadeInBg = TweenService:Create(Background, TweenInfo.new(0.4), {BackgroundTransparency = 0.7})
-	fadeInFrame:Play()
-	fadeInBg:Play()
-	
-	local tweenInfo = TweenInfo.new(6, Enum.EasingStyle.Linear)
-	local goal = {Size = UDim2.new(1, 0, 1, 0)}
-	
-	local progress = 0
-	local increment = 0.01 -- 100% за ~6 секунд
-	
-	local tween = TweenService:Create(LoadingBar, tweenInfo, {Size = UDim2.new(1, 0, 1, 0)})
-	tween:Play()
-	
-	tween:GetPropertyChangedSignal("Size"):Connect(function()
-		local sizeX = LoadingBar.Size.X.Scale
-		LoadingText.Text = ("Загрузка... %d%%"):format(math.floor(sizeX * 100))
-	end)
-	
-	tween.Completed:Connect(function()
-		LoadingBar.Size = UDim2.new(0, 0, 1, 0)
-		LoadingText.Text = "Загрузка завершена"
-		
-		DarkTradeButton.Visible = true
-	end)
-end
+SettingsButton.MouseButton1Click:Connect(function()
+    print("Settings clicked")
+end)
 
-playLoading()
-
--- Перетаскивание окна только за Header
-local dragging, dragInput, dragStart, startPos
+-- Перетаскивание только за шапку (Header)
+local dragging = false
+local dragInput = nil
+local dragStart = nil
+local startPos = nil
 
 local function update(input)
-	local delta = input.Position - dragStart
-	Frame.Position = UDim2.new(
-		math.clamp(startPos.X.Scale, 0, 1),
-		math.clamp(startPos.X.Offset + delta.X, 0, workspace.CurrentCamera.ViewportSize.X - Frame.AbsoluteSize.X),
-		math.clamp(startPos.Y.Scale, 0, 1),
-		math.clamp(startPos.Y.Offset + delta.Y, 0, workspace.CurrentCamera.ViewportSize.Y - Frame.AbsoluteSize.Y)
-	)
+    local delta = input.Position - dragStart
+    Frame.Position = UDim2.new(
+        math.clamp(startPos.X.Scale, 0, 1),
+        math.clamp(startPos.X.Offset + delta.X, 0, workspace.CurrentCamera.ViewportSize.X - Frame.AbsoluteSize.X),
+        math.clamp(startPos.Y.Scale, 0, 1),
+        math.clamp(startPos.Y.Offset + delta.Y, 0, workspace.CurrentCamera.ViewportSize.Y - Frame.AbsoluteSize.Y)
+    )
 end
 
 Header.InputBegan:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.MouseButton1 then
-		dragging = true
-		dragStart = input.Position
-		startPos = Frame.Position
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = Frame.Position
 
-		input.Changed
-```
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+Header.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement then
+        dragInput = input
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        update(input)
+    end
+end)
