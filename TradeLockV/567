@@ -67,7 +67,7 @@ LoadingBar.BorderSizePixel = 0
 local barCorner = Instance.new("UICorner", LoadingBar)
 barCorner.CornerRadius = UDim.new(0, 12)
 
-local function createToggleButton(parent, posY, text)
+local function createToggleButton(parent, posY, textKey)
     local button = Instance.new("TextButton", parent)
     button.Size = UDim2.new(0, 70, 0, 35)
     button.Position = UDim2.new(0, 15, 0, posY)
@@ -84,7 +84,6 @@ local function createToggleButton(parent, posY, text)
     label.Size = UDim2.new(0, 90, 0, 35)
     label.Position = UDim2.new(0, 95, 0, posY)
     label.BackgroundTransparency = 1
-    label.Text = text
     label.Font = Enum.Font.GothamBold
     label.TextSize = 18
     label.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -109,12 +108,33 @@ local function createToggleButton(parent, posY, text)
     return {
         button = button,
         label = label,
+        textKey = textKey,
         loadingBg = loadingBg,
         loadingBar = loadingBar,
         toggled = false,
         tween = nil
     }
 end
+
+local translations = {
+    en = {
+        title = "Settings",
+        language = "Language",
+        back = "Back",
+        error = "Script not initialized. Disable Antiscam in settings and re-join",
+        TradeLag = "TradeLag",
+        TradeVacuum = "TradeVacuum"
+    },
+    ru = {
+        title = "Настройки",
+        language = "Язык",
+        back = "Назад",
+        error = "Скрипт не инициализирован. Отключите Antiscam в настройках и перезайдите",
+        TradeLag = "ТрейдЛаг",
+        TradeVacuum = "ТрейдВакуум"
+    }
+}
+local currentLanguage = "en"
 
 local TradeLag = createToggleButton(Frame, 60, "TradeLag")
 local TradeVacuum = createToggleButton(Frame, 105, "TradeVacuum")
@@ -201,22 +221,6 @@ MiniIcon.MouseButton1Click:Connect(function()
     MiniIcon.Visible = false
 end)
 
-local translations = {
-    en = {
-        title = "Settings",
-        language = "Language",
-        back = "Back",
-        error = "Script not initialized. Disable Antiscam in settings and re-join"
-    },
-    ru = {
-        title = "Настройки",
-        language = "Язык",
-        back = "Назад",
-        error = "Скрипт не инициализирован. Отключите Antiscam в настройках delta и перезайдите"
-    }
-}
-local currentLanguage = "en"
-
 local SettingsFrame = Instance.new("Frame", ScreenGui)
 SettingsFrame.Size = UDim2.new(0, 300, 0, 180)
 SettingsFrame.Position = UDim2.new(0.5, -150, 0.5, -90)
@@ -229,7 +233,6 @@ sCorner.CornerRadius = UDim.new(0, 12)
 local SettingsTitle = Instance.new("TextLabel", SettingsFrame)
 SettingsTitle.Size = UDim2.new(1, 0, 0, 40)
 SettingsTitle.BackgroundTransparency = 1
-SettingsTitle.Text = translations[currentLanguage].title
 SettingsTitle.Font = Enum.Font.GothamBold
 SettingsTitle.TextSize = 20
 SettingsTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -241,7 +244,6 @@ LanguageButton.BackgroundColor3 = Color3.fromRGB(100, 0, 200)
 LanguageButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 LanguageButton.Font = Enum.Font.GothamBold
 LanguageButton.TextSize = 18
-LanguageButton.Text = translations[currentLanguage].language .. ": EN"
 local langCorner = Instance.new("UICorner", LanguageButton)
 langCorner.CornerRadius = UDim.new(0, 10)
 
@@ -252,7 +254,6 @@ BackButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
 BackButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 BackButton.Font = Enum.Font.GothamBold
 BackButton.TextSize = 18
-BackButton.Text = translations[currentLanguage].back
 local backCorner = Instance.new("UICorner", BackButton)
 backCorner.CornerRadius = UDim.new(0, 10)
 
@@ -260,8 +261,8 @@ local function updateLanguage()
     SettingsTitle.Text = translations[currentLanguage].title
     LanguageButton.Text = translations[currentLanguage].language .. (currentLanguage == "en" and ": EN" or ": RU")
     BackButton.Text = translations[currentLanguage].back
-    TradeLag.label.Text = "TradeLag"
-    TradeVacuum.label.Text = "TradeVacuum"
+    TradeLag.label.Text = translations[currentLanguage][TradeLag.textKey]
+    TradeVacuum.label.Text = translations[currentLanguage][TradeVacuum.textKey]
 end
 
 LanguageButton.MouseButton1Click:Connect(function()
@@ -284,11 +285,11 @@ function showPopupMessage(text)
     if isPopupActive then return end
     isPopupActive = true
     local popup = Instance.new("TextLabel", ScreenGui)
-    popup.Size = UDim2.new(0, 400, 0, 50)
-    popup.Position = UDim2.new(0.5, -200, 0.1, 0)
+    popup.Size = UDim2.new(0, 420, 0, 60)
+    popup.Position = UDim2.new(0.5, -210, 0.05, 0)
     popup.BackgroundColor3 = Color3.fromRGB(50, 50, 70)
     popup.TextColor3 = Color3.fromRGB(255, 100, 100)
-    popup.Text = text
+    popup.Text = "⚠ " .. text
     popup.Font = Enum.Font.GothamBold
     popup.TextWrapped = true
     popup.TextSize = 16
@@ -307,3 +308,5 @@ function showPopupMessage(text)
         isPopupActive = false
     end)
 end
+
+updateLanguage()
