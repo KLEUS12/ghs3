@@ -1,0 +1,227 @@
+ьае, [24.08.2025 18:13]
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+
+-- Таблицы переводов
+local Translations = {
+    English = {
+        mainTitle = "TradeLock",
+        tradeLag = "TradeLag",
+        tradeVacuum = "TradeVacuum",
+        settings = "Settings",
+        loading = "Loading...",
+        on = "ON",
+        off = "OFF",
+        back = "Back",
+        language = "Language",
+        english = "English",
+        russian = "Russian"
+    },
+    Russian = {
+        mainTitle = "ТрейдЛок",
+        tradeLag = "ТрейдЛаг",
+        tradeVacuum = "ТрейдВакуум",
+        settings = "Настройки",
+        loading = "Загрузка...",
+        on = "ВКЛ",
+        off = "ВЫКЛ",
+        back = "Назад",
+        language = "Язык",
+        english = "Английский",
+        russian = "Русский"
+    }
+}
+
+-- Текущий язык (по умолчанию английский)
+local currentLanguage = "English"
+
+-- Функция обновления текстов
+local function updateTexts()
+    local lang = Translations[currentLanguage]
+    
+    -- Обновляем главные элементы
+    TitleLabel.Text = lang.mainTitle
+    SettingsButton.Text = lang.settings
+    CloseButton.Text = "X"
+    
+    -- Обновляем кнопки функций
+    TradeLag.label.Text = lang.tradeLag
+    TradeVacuum.label.Text = lang.tradeVacuum
+    
+    -- Обновляем состояние кнопок
+    for _, toggleData in pairs({TradeLag, TradeVacuum}) do
+        if toggleData.toggled then
+            toggleData.button.Text = lang.on
+        else
+            toggleData.button.Text = lang.off
+        end
+    end
+    
+    -- Обновляем мини-иконку
+    MiniIcon.Text = lang.mainTitle
+end
+
+-- Создаем меню настроек
+local SettingsFrame = Instance.new("Frame", ScreenGui)
+SettingsFrame.Size = UDim2.new(0, 300, 0, 200)
+SettingsFrame.Position = UDim2.new(0.5, -150, 0.5, -100)
+SettingsFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 60)
+SettingsFrame.Visible = false
+SettingsFrame.BorderSizePixel = 0
+local settingsCorner = Instance.new("UICorner", SettingsFrame)
+settingsCorner.CornerRadius = UDim.new(0, 12)
+
+-- Заголовок настроек
+local SettingsTitle = Instance.new("TextLabel", SettingsFrame)
+SettingsTitle.Size = UDim2.new(1, 0, 0, 40)
+SettingsTitle.Position = UDim2.new(0, 0, 0, 0)
+SettingsTitle.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
+SettingsTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+SettingsTitle.Text = Translations[currentLanguage].settings
+SettingsTitle.Font = Enum.Font.GothamBold
+SettingsTitle.TextSize = 20
+SettingsTitle.BorderSizePixel = 0
+
+-- Кнопка назад
+local BackButton = Instance.new("TextButton", SettingsFrame)
+BackButton.Size = UDim2.new(0, 80, 0, 30)
+BackButton.Position = UDim2.new(0.5, -40, 0, 45)
+BackButton.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+BackButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+BackButton.Text = Translations[currentLanguage].back
+BackButton.Font = Enum.Font.GothamBold
+BackButton.TextSize = 14
+BackButton.BorderSizePixel = 0
+local backCorner = Instance.new("UICorner", BackButton)
+backCorner.CornerRadius = UDim.new(0, 8)
+
+-- Выбор языка
+local LanguageLabel = Instance.new("TextLabel", SettingsFrame)
+LanguageLabel.Size = UDim2.new(0, 100, 0, 25)
+LanguageLabel.Position = UDim2.new(0.1, 0, 0, 90)
+LanguageLabel.BackgroundTransparency = 1
+LanguageLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+LanguageLabel.Text = Translations[currentLanguage].language
+LanguageLabel.Font = Enum.Font.Gotham
+LanguageLabel.TextSize = 16
+LanguageLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+local EnglishButton = Instance.new("TextButton", SettingsFrame)
+EnglishButton.Size = UDim2.new(0, 120, 0, 30)
+EnglishButton.Position = UDim2.new(0.55, 0, 0, 90)
+EnglishButton.BackgroundColor3 = currentLanguage == "English" and Color3.fromRGB(0, 170, 255) or Color3.fromRGB(80, 80, 100)
+EnglishButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+EnglishButton.Text = Translations[currentLanguage].english
+EnglishButton.Font = Enum.Font.GothamBold
+EnglishButton.TextSize = 14
+EnglishButton.BorderSizePixel = 0
+local engCorner = Instance.new("UICorner", EnglishButton)
+engCorner.CornerRadius = UDim.new(0, 8)
+
+ьае, [24.08.2025 18:13]
+local RussianButton = Instance.new("TextButton", SettingsFrame)
+RussianButton.Size = UDim2.new(0, 120, 0, 30)
+RussianButton.Position = UDim2.new(0.55, 0, 0, 125)
+RussianButton.BackgroundColor3 = currentLanguage == "Russian" and Color3.fromRGB(0, 170, 255) or Color3.fromRGB(80, 80, 100)
+RussianButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+RussianButton.Text = Translations[currentLanguage].russian
+RussianButton.Font = Enum.Font.GothamBold
+RussianButton.TextSize = 14
+RussianButton.BorderSizePixel = 0
+local rusCorner = Instance.new("UICorner", RussianButton)
+rusCorner.CornerRadius = UDim.new(0, 8)
+
+-- Функция переключения языка
+local function setLanguage(lang)
+    currentLanguage = lang
+    updateTexts()
+    
+    -- Обновляем кнопки языка
+    EnglishButton.BackgroundColor3 = lang == "English" and Color3.fromRGB(0, 170, 255) or Color3.fromRGB(80, 80, 100)
+    RussianButton.BackgroundColor3 = lang == "Russian" and Color3.fromRGB(0, 170, 255) or Color3.fromRGB(80, 80, 100)
+    
+    EnglishButton.Text = Translations[lang].english
+    RussianButton.Text = Translations[lang].russian
+    SettingsTitle.Text = Translations[lang].settings
+    BackButton.Text = Translations[lang].back
+    LanguageLabel.Text = Translations[lang].language
+end
+
+-- Обработчики кнопок
+EnglishButton.MouseButton1Click:Connect(function()
+    setLanguage("English")
+end)
+
+RussianButton.MouseButton1Click:Connect(function()
+    setLanguage("Russian")
+end)
+
+BackButton.MouseButton1Click:Connect(function()
+    SettingsFrame.Visible = false
+    Frame.Visible = true
+end)
+
+-- Модифицируем функцию анимации загрузки
+local function runLoadingAnimation(toggleData)
+    if toggleData.loadingBg.Visible then return end
+    toggleData.loadingBg.Visible = true
+    toggleData.loadingBar.Size = UDim2.new(0, 0, 1, 0)
+    local duration = 5
+
+    toggleData.button.AutoButtonColor = false
+    toggleData.button.Text = Translations[currentLanguage].loading
+    toggleData.button.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+
+    toggleData.tween = TweenService:Create(toggleData.loadingBar, TweenInfo.new(duration, Enum.EasingStyle.Linear), {Size = UDim2.new(1, 0, 1, 0)})
+    toggleData.tween:Play()
+
+    toggleData.tween.Completed:Connect(function()
+        toggleData.loadingBg.Visible = false
+        toggleData.toggled = not toggleData.toggled
+        if toggleData.toggled then
+            toggleData.button.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+            toggleData.button.Text = Translations[currentLanguage].on
+        else
+            toggleData.button.BackgroundColor3 = Color3.fromRGB(170, 0, 255)
+            toggleData.button.Text = Translations[currentLanguage].off
+        end
+        toggleData.button.AutoButtonColor = true
+    end)
+end
+
+-- Обновляем обработчик кнопки настроек
+SettingsButton.MouseButton1Click:Connect(function()
+    Frame.Visible = false
+    SettingsFrame.Visible = true
+end)
+
+-- Обновляем обработчик мини-иконки
+MiniIcon.MouseButton1Click:Connect(function()
+    Frame.Visible = true
+    SettingsFrame.Visible = false
+    MiniIcon.Visible = false
+end)
+
+-- Инициализируем тексты при запуске
+updateTexts()
+
+-- Делаем окно перетаскиваемым (удобство для инжектора)
+local dragInput, dragStart, startPos
+Frame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragStart = input.Position
+        startPos = Frame.Position
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragStart = nil
+            end
+        end)
+    end
+end)
+
+Frame.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement and dragStart then
+        local delta = input.Position - dragStart
+        Frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
