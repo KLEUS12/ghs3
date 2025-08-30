@@ -1,56 +1,106 @@
-loadstring(game:HttpGet("https://raw.githubusercontent.com/VRXDev2/DestroyRobloxGUI/main/DestroyRobloxGUI.lua"))()
+local Library = loadstring(game:HttpGet("https://pastebin.com/raw/vff1bQ9F"))()
+local Window = Library.CreateLib("Bananas", "Serpent")
 
-if not game:IsLoaded() then
-    game.Loaded:Wait()
+local LoadingScreen = Instance.new("ScreenGui")
+local Background = Instance.new("Frame")
+local LoadingBar = Instance.new("Frame")
+local Fill = Instance.new("Frame")
+local Title = Instance.new("TextLabel")
+local Percent = Instance.new("TextLabel")
+
+LoadingScreen.Name = "LoadingScreen"
+LoadingScreen.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+LoadingScreen.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+Background.Name = "Background"
+Background.Parent = LoadingScreen
+Background.AnchorPoint = Vector2.new(0.5, 0.5)
+Background.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+Background.BorderSizePixel = 0
+Background.Position = UDim2.new(0.5, 0, 0.5, 0)
+Background.Size = UDim2.new(0, 400, 0, 100)
+
+LoadingBar.Name = "LoadingBar"
+LoadingBar.Parent = Background
+LoadingBar.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+LoadingBar.BorderSizePixel = 0
+LoadingBar.Position = UDim2.new(0.05, 0, 0.6, 0)
+LoadingBar.Size = UDim2.new(0.9, 0, 0, 20)
+
+Fill.Name = "Fill"
+Fill.Parent = LoadingBar
+Fill.BackgroundColor3 = Color3.fromRGB(255, 203, 51)
+Fill.BorderSizePixel = 0
+Fill.Size = UDim2.new(0, 0, 1, 0)
+
+Title.Name = "Title"
+Title.Parent = Background
+Title.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+Title.BackgroundTransparency = 1.0
+Title.Position = UDim2.new(0.05, 0, 0.1, 0)
+Title.Size = UDim2.new(0.9, 0, 0, 30)
+Title.Font = Enum.Font.GothamBold
+Title.Text = "Bananas"
+Title.TextColor3 = Color3.fromRGB(255, 203, 51)
+Title.TextSize = 24
+
+Percent.Name = "Percent"
+Percent.Parent = Background
+Percent.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+Percent.BackgroundTransparency = 1.0
+Percent.Position = UDim2.new(0.05, 0, 0.8, 0)
+Percent.Size = UDim2.new(0.9, 0, 0, 20)
+Percent.Font = Enum.Font.Gotham
+Percent.Text = "0%"
+Percent.TextColor3 = Color3.fromRGB(255, 255, 255)
+Percent.TextSize = 16
+
+for i = 1, 100 do
+    Fill.Size = UDim2.new(i/100, 0, 1, 0)
+    Percent.Text = i.."%"
+    wait(0.06)
 end
 
-local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/shlexware/Rayfield/main/source'))()
+wait(0.5)
+LoadingScreen:Destroy()
 
-local Window = Rayfield:CreateWindow({
-    Name = "Bananas",
-    LoadingTitle = "Bananas Hub загружается...",
-    LoadingSubtitle = "by YourName",
-    ConfigurationSaving = {
-        Enabled = false,
-    },
-    Discord = {
-        Enabled = false,
-    },
-    KeySystem = false,
-    Colors = {
-        MainColor = Color3.fromRGB(255, 203, 51),
-        HoverColor = Color3.fromRGB(230, 183, 46),
-        MinColor = Color3.fromRGB(255, 153, 0),
-        CloseColor = Color3.fromRGB(255, 77, 77)
-    }
-})
+local MainTab = Window:NewTab("Главная")
+local MainSection = MainTab:NewSection("Основные функции")
 
-wait(6)
+MainSection:NewButton("Wi-Fi pinch", "Активировать функцию", function()
+    local Notification = Instance.new("ScreenGui")
+    local NotifFrame = Instance.new("Frame")
+    local NotifText = Instance.new("TextLabel")
+    
+    Notification.Name = "Notification"
+    Notification.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+    Notification.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    
+    NotifFrame.Name = "NotifFrame"
+    NotifFrame.Parent = Notification
+    NotifFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+    NotifFrame.BackgroundColor3 = Color3.fromRGB(255, 203, 51)
+    NotifFrame.BorderSizePixel = 0
+    NotifFrame.Position = UDim2.new(0.5, 0, 0.3, 0)
+    NotifFrame.Size = UDim2.new(0, 0, 0, 60)
+    
+    NotifText.Name = "NotifText"
+    NotifText.Parent = NotifFrame
+    NotifText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    NotifText.BackgroundTransparency = 1.0
+    NotifText.Size = UDim2.new(1, 0, 1, 0)
+    NotifText.Font = Enum.Font.GothamBold
+    NotifText.Text = "Wi-Fi Pinch активируется..."
+    NotifText.TextColor3 = Color3.fromRGB(0, 0, 0)
+    NotifText.TextSize = 18
+    
+    NotifFrame:TweenSize(UDim2.new(0, 300, 0, 60), "Out", "Quad", 0.5, true)
+    wait(2.5)
+    NotifFrame:TweenSize(UDim2.new(0, 0, 0, 60), "Out", "Quad", 0.5, true)
+    wait(0.5)
+    Notification:Destroy()
+    
+    print("Wi-Fi pinch активирован!")
+end)
 
-local MainTab = Window:CreateTab("Главная", nil)
-
-local MainSection = MainTab:CreateSection("Основные функции")
-
-local WiFiPinchButton = MainTab:CreateButton({
-    Name = "Wi-Fi pinch",
-    Callback = function()
-        Rayfield:Notify({
-            Title = "Wi-Fi Pinch",
-            Content = "Активация...",
-            Duration = 3,
-            Image = nil,
-            Actions = {
-                Ignore = {
-                    Name = "Ок",
-                    Callback = function()
-                    end
-                },
-            },
-        })
-        print("Wi-Fi pinch активирован!")
-    end,
-})
-
-local OtherSection = MainTab:CreateSection("Другое")
-
-Rayfield:LoadConfiguration()
+Library:ToggleUI()
