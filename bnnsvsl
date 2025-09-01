@@ -128,7 +128,8 @@ CloseButton.BackgroundTransparency = 1
 CloseButton.Position = UDim2.new(1, -30, 0, 0)
 CloseButton.Size = UDim2.new(0, 30, 1, 0)
 CloseButton.Font = Enum.Font.GothamBold
-CloseButton.Text = "−"
+CloseButton.Text = "−
+
 
 CloseButton.TextColor3 = Color3.fromRGB(0, 0, 0)
 CloseButton.TextSize = 18
@@ -246,8 +247,11 @@ local function CreateLoadingAnimation(text)
     
     local totalTime = 60
     local startTime = tick()
+    
+    for i = 1, 100
 
-for i = 1, 100 do
+
+do
         local elapsed = tick() - startTime
         local remaining = totalTime - elapsed
         LoadingTime.Text = "Осталось: " .. math.floor(remaining) .. " секунд"
@@ -338,4 +342,4 @@ AutoskipButton.MouseButton1Click:Connect(function()
         AutoskipButton.TextColor3 = Color3.fromRGB(255, 100, 100)
         print("Autoskip ОТКЛЮЧЕН!")
     end
-end)
+end)"
