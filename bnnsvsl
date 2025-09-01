@@ -1,0 +1,341 @@
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local LocalPlayer = Players.LocalPlayer
+local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+
+local LoadingScreen = Instance.new("ScreenGui")
+local MainFrame = Instance.new("Frame")
+local LoadingBar = Instance.new("Frame")
+local Fill = Instance.new("Frame")
+local Title = Instance.new("TextLabel")
+local Percent = Instance.new("TextLabel")
+
+LoadingScreen.Name = "BananasLoadingScreen"
+LoadingScreen.Parent = PlayerGui
+LoadingScreen.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+MainFrame.Name = "MainFrame"
+MainFrame.Parent = LoadingScreen
+MainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+MainFrame.BorderSizePixel = 0
+MainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
+MainFrame.Size = UDim2.new(0, 300, 0, 120)
+
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 8)
+corner.Parent = MainFrame
+
+Title.Name = "Title"
+Title.Parent = MainFrame
+Title.AnchorPoint = Vector2.new(0.5, 0.5)
+Title.BackgroundTransparency = 1
+Title.Position = UDim2.new(0.5, 0, 0.3, 0)
+Title.Size = UDim2.new(0.8, 0, 0, 30)
+Title.Font = Enum.Font.GothamBold
+Title.Text = "BANANAS"
+Title.TextColor3 = Color3.fromRGB(255, 203, 51)
+Title.TextSize = 20
+
+LoadingBar.Name = "LoadingBar"
+LoadingBar.Parent = MainFrame
+LoadingBar.AnchorPoint = Vector2.new(0.5, 0.5)
+LoadingBar.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+LoadingBar.BorderSizePixel = 0
+LoadingBar.Position = UDim2.new(0.5, 0, 0.65, 0)
+LoadingBar.Size = UDim2.new(0.8, 0, 0, 12)
+
+local barCorner = Instance.new("UICorner")
+barCorner.CornerRadius = UDim.new(0, 10)
+barCorner.Parent = LoadingBar
+
+Fill.Name = "Fill"
+Fill.Parent = LoadingBar
+Fill.BackgroundColor3 = Color3.fromRGB(255, 203, 51)
+Fill.BorderSizePixel = 0
+Fill.Size = UDim2.new(0, 0, 1, 0)
+
+local fillCorner = Instance.new("UICorner")
+fillCorner.CornerRadius = UDim.new(0, 10)
+fillCorner.Parent = Fill
+
+Percent.Name = "Percent"
+Percent.Parent = MainFrame
+Percent.AnchorPoint = Vector2.new(0.5, 0.5)
+Percent.BackgroundTransparency = 1
+Percent.Position = UDim2.new(0.5, 0, 0.85, 0)
+Percent.Size = UDim2.new(0.8, 0, 0, 20)
+Percent.Font = Enum.Font.Gotham
+Percent.Text = "0%"
+Percent.TextColor3 = Color3.fromRGB(255, 255, 255)
+Percent.TextSize = 14
+
+for i = 1, 100 do
+    Fill.Size = UDim2.new(i/100, 0, 1, 0)
+    Percent.Text = i.."%"
+    wait(0.06)
+end
+
+wait(0.5)
+LoadingScreen:Destroy()
+
+local MainUI = Instance.new("ScreenGui")
+MainUI.Name = "BananasMainUI"
+MainUI.Parent = PlayerGui
+MainUI.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+local MainFrame = Instance.new("Frame")
+MainFrame.Name = "MainFrame"
+MainFrame.Parent = MainUI
+MainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+MainFrame.BorderSizePixel = 0
+MainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
+MainFrame.Size = UDim2.new(0, 250, 0, 230)
+MainFrame.Visible = true
+
+local mainCorner = Instance.new("UICorner")
+mainCorner.CornerRadius = UDim.new(0, 10)
+mainCorner.Parent = MainFrame
+
+local Header = Instance.new("Frame")
+Header.Name = "Header"
+Header.Parent = MainFrame
+Header.BackgroundColor3 = Color3.fromRGB(255, 203, 51)
+Header.BorderSizePixel = 0
+Header.Size = UDim2.new(1, 0, 0, 30)
+
+local headerCorner = Instance.new("UICorner")
+headerCorner.CornerRadius = UDim.new(0, 10)
+headerCorner.Parent = Header
+
+local TitleText = Instance.new("TextLabel")
+TitleText.Name = "TitleText"
+TitleText.Parent = Header
+TitleText.BackgroundTransparency = 1
+TitleText.Position = UDim2.new(0, 10, 0, 0)
+TitleText.Size = UDim2.new(0, 150, 1, 0)
+TitleText.Font = Enum.Font.GothamBold
+TitleText.Text = "BANANAS"
+TitleText.TextColor3 = Color3.fromRGB(0, 0, 0)
+TitleText.TextSize = 16
+TitleText.TextXAlignment = Enum.TextXAlignment.Left
+
+local CloseButton = Instance.new("TextButton")
+CloseButton.Name = "CloseButton"
+CloseButton.Parent = Header
+CloseButton.BackgroundTransparency = 1
+CloseButton.Position = UDim2.new(1, -30, 0, 0)
+CloseButton.Size = UDim2.new(0, 30, 1, 0)
+CloseButton.Font = Enum.Font.GothamBold
+CloseButton.Text = "−"
+
+CloseButton.TextColor3 = Color3.fromRGB(0, 0, 0)
+CloseButton.TextSize = 18
+
+local ButtonsContainer = Instance.new("Frame")
+ButtonsContainer.Name = "ButtonsContainer"
+ButtonsContainer.Parent = MainFrame
+ButtonsContainer.Position = UDim2.new(0, 0, 0, 40)
+ButtonsContainer.Size = UDim2.new(1, 0, 1, -40)
+ButtonsContainer.BackgroundTransparency = 1
+ButtonsContainer.BorderSizePixel = 0
+
+local MinimizedIcon = Instance.new("TextButton")
+MinimizedIcon.Name = "MinimizedIcon"
+MinimizedIcon.Parent = MainUI
+MinimizedIcon.AnchorPoint = Vector2.new(1, 0)
+MinimizedIcon.BackgroundColor3 = Color3.fromRGB(255, 203, 51)
+MinimizedIcon.BorderSizePixel = 0
+MinimizedIcon.Position = UDim2.new(1, -10, 0, 10)
+MinimizedIcon.Size = UDim2.new(0, 70, 0, 25)
+MinimizedIcon.Visible = false
+MinimizedIcon.Font = Enum.Font.GothamBold
+MinimizedIcon.Text = "BANANAS"
+MinimizedIcon.TextColor3 = Color3.fromRGB(0, 0, 0)
+MinimizedIcon.TextSize = 11
+
+local iconCorner = Instance.new("UICorner")
+iconCorner.CornerRadius = UDim.new(0, 6)
+iconCorner.Parent = MinimizedIcon
+
+local isMinimized = false
+
+CloseButton.MouseButton1Click:Connect(function()
+    isMinimized = not isMinimized
+    if isMinimized then
+        MainFrame.Visible = false
+        MinimizedIcon.Visible = true
+    else
+        MainFrame.Visible = true
+        MinimizedIcon.Visible = false
+    end
+end)
+
+MinimizedIcon.MouseButton1Click:Connect(function()
+    isMinimized = false
+    MainFrame.Visible = true
+    MinimizedIcon.Visible = false
+end)
+
+local function CreateLoadingAnimation(text)
+    local LoadingUI = Instance.new("ScreenGui")
+    local LoadingFrame = Instance.new("Frame")
+    local LoadingText = Instance.new("TextLabel")
+    local LoadingBar = Instance.new("Frame")
+    local LoadingFill = Instance.new("Frame")
+    local LoadingTime = Instance.new("TextLabel")
+    
+    LoadingUI.Name = "LoadingUI"
+    LoadingUI.Parent = PlayerGui
+    LoadingUI.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    
+    LoadingFrame.Name = "LoadingFrame"
+    LoadingFrame.Parent = LoadingUI
+    LoadingFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+    LoadingFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    LoadingFrame.BorderSizePixel = 0
+    LoadingFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
+    LoadingFrame.Size = UDim2.new(0, 250, 0, 100)
+    
+    local loadingCorner = Instance.new("UICorner")
+    loadingCorner.CornerRadius = UDim.new(0, 10)
+    loadingCorner.Parent = LoadingFrame
+    
+    LoadingText.Name = "LoadingText"
+    LoadingText.Parent = LoadingFrame
+    LoadingText.BackgroundTransparency = 1
+    LoadingText.Position = UDim2.new(0, 0, 0, 10)
+    LoadingText.Size = UDim2.new(1, 0, 0, 25)
+    LoadingText.Font = Enum.Font.GothamBold
+    LoadingText.Text = text
+    LoadingText.TextColor3 = Color3.fromRGB(255, 203, 51)
+    LoadingText.TextSize = 14
+    
+    LoadingTime.Name = "LoadingTime"
+    LoadingTime.Parent = LoadingFrame
+    LoadingTime.BackgroundTransparency = 1
+    LoadingTime.Position = UDim2.new(0, 0, 0, 35)
+    LoadingTime.Size = UDim2.new(1, 0, 0, 20)
+    LoadingTime.Font = Enum.Font.Gotham
+    LoadingTime.Text = "Осталось: 60 секунд"
+    LoadingTime.TextColor3 = Color3.fromRGB(255, 255, 255)
+    LoadingTime.TextSize = 12
+    
+    LoadingBar.Name = "LoadingBar"
+    LoadingBar.Parent = LoadingFrame
+    LoadingBar.AnchorPoint = Vector2.new(0.5, 0.5)
+    LoadingBar.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    LoadingBar.BorderSizePixel = 0
+    LoadingBar.Position = UDim2.new(0.5, 0, 0.7, 0)
+    LoadingBar.Size = UDim2.new(0.8, 0, 0, 12)
+    
+    local barCorner2 = Instance.new("UICorner")
+    barCorner2.CornerRadius = UDim.new(0, 8)
+    barCorner2.Parent = LoadingBar
+    
+    LoadingFill.Name = "LoadingFill"
+    LoadingFill.Parent = LoadingBar
+    LoadingFill.BackgroundColor3 = Color3.fromRGB(100, 255, 100)
+    LoadingFill.BorderSizePixel = 0
+    LoadingFill.Size = UDim2.new(0, 0, 1, 0)
+    
+    local fillCorner2 = Instance.new("UICorner")
+    fillCorner2.CornerRadius = UDim.new(0, 8)
+    fillCorner2.Parent = LoadingFill
+    
+    local totalTime = 60
+    local startTime = tick()
+
+for i = 1, 100 do
+        local elapsed = tick() - startTime
+        local remaining = totalTime - elapsed
+        LoadingTime.Text = "Осталось: " .. math.floor(remaining) .. " секунд"
+        LoadingFill.Size = UDim2.new(i/100, 0, 1, 0)
+        wait(0.6)
+    end
+    
+    LoadingTime.Text = "Завершено!"
+    wait(0.5)
+    LoadingUI:Destroy()
+end
+
+local wifiEnabled = false
+local WiFiButton = Instance.new("TextButton")
+WiFiButton.Name = "WiFiButton"
+WiFiButton.Parent = ButtonsContainer
+WiFiButton.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+WiFiButton.BorderSizePixel = 0
+WiFiButton.Size = UDim2.new(0.9, 0, 0, 40)
+WiFiButton.Position = UDim2.new(0.05, 0, 0.1, 0)
+WiFiButton.Font = Enum.Font.Gotham
+WiFiButton.Text = "Wi-Fi Pinch: OFF"
+WiFiButton.TextColor3 = Color3.fromRGB(255, 100, 100)
+WiFiButton.TextSize = 14
+
+local buttonCorner = Instance.new("UICorner")
+buttonCorner.CornerRadius = UDim.new(0, 8)
+buttonCorner.Parent = WiFiButton
+
+WiFiButton.MouseEnter:Connect(function()
+    TweenService:Create(WiFiButton, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(55, 55, 55)}):Play()
+end)
+
+WiFiButton.MouseLeave:Connect(function()
+    TweenService:Create(WiFiButton, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(45, 45, 45)}):Play()
+end)
+
+WiFiButton.MouseButton1Click:Connect(function()
+    wifiEnabled = not wifiEnabled
+    
+    if wifiEnabled then
+        WiFiButton.Text = "Wi-Fi Pinch: ON"
+        WiFiButton.TextColor3 = Color3.fromRGB(100, 255, 100)
+        CreateLoadingAnimation("Инициализация Wi-Fi Pinch...")
+        print("Wi-Fi pinch АКТИВИРОВАН!")
+    else
+        WiFiButton.Text = "Wi-Fi Pinch: OFF"
+        WiFiButton.TextColor3 = Color3.fromRGB(255, 100, 100)
+        print("Wi-Fi pinch ОТКЛЮЧЕН!")
+    end
+end)
+
+local autoskipEnabled = false
+local AutoskipButton = Instance.new("TextButton")
+AutoskipButton.Name = "AutoskipButton"
+AutoskipButton.Parent = ButtonsContainer
+AutoskipButton.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+AutoskipButton.BorderSizePixel = 0
+AutoskipButton.Size = UDim2.new(0.9, 0, 0, 40)
+AutoskipButton.Position = UDim2.new(0.05, 0, 0, 60)
+AutoskipButton.Font = Enum.Font.Gotham
+AutoskipButton.Text = "Autoskip: OFF"
+AutoskipButton.TextColor3 = Color3.fromRGB(255, 100, 100)
+AutoskipButton.TextSize = 14
+
+local autoskipCorner = Instance.new("UICorner")
+autoskipCorner.CornerRadius = UDim.new(0, 8)
+autoskipCorner.Parent = AutoskipButton
+
+AutoskipButton.MouseEnter:Connect(function()
+    TweenService:Create(AutoskipButton, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(55, 55, 55)}):Play()
+end)
+
+AutoskipButton.MouseLeave:Connect(function()
+    TweenService:Create(AutoskipButton, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(45, 45, 45)}):Play()
+end)
+
+AutoskipButton.MouseButton1Click:Connect(function()
+    autoskipEnabled = not autoskipEnabled
+    
+    if autoskipEnabled then
+        AutoskipButton.Text = "Autoskip: ON"
+        AutoskipButton.TextColor3 = Color3.fromRGB(100, 255, 100)
+        CreateLoadingAnimation("Инициализация Autoskip...")
+        print("Autoskip АКТИВИРОВАН!")
+    else
+        AutoskipButton.Text = "Autoskip: OFF"
+        AutoskipButton.TextColor3 = Color3.fromRGB(255, 100, 100)
+        print("Autoskip ОТКЛЮЧЕН!")
+    end
+end)
