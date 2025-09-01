@@ -1,3 +1,4 @@
+ьае, [02.09.2025 0:27]
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local LocalPlayer = Players.LocalPlayer
@@ -130,7 +131,7 @@ CloseButton.Size = UDim2.new(0, 30, 1, 0)
 CloseButton.Font = Enum.Font.GothamBold
 CloseButton.Text = "−"
 
-ьае, [01.09.2025 16:33]
+ьае, [02.09.2025 0:27]
 CloseButton.TextColor3 = Color3.fromRGB(0, 0, 0)
 CloseButton.TextSize = 18
 
@@ -179,12 +180,13 @@ MinimizedIcon.MouseButton1Click:Connect(function()
     MinimizedIcon.Visible = false
 end)
 
-local function CreateLoadingAnimation(duration, text)
+local function CreateLoadingAnimation(text)
     local LoadingUI = Instance.new("ScreenGui")
     local LoadingFrame = Instance.new("Frame")
     local LoadingText = Instance.new("TextLabel")
     local LoadingBar = Instance.new("Frame")
     local LoadingFill = Instance.new("Frame")
+    local LoadingTime = Instance.new("TextLabel")
     
     LoadingUI.Name = "LoadingUI"
     LoadingUI.Parent = PlayerGui
@@ -196,7 +198,7 @@ local function CreateLoadingAnimation(duration, text)
     LoadingFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
     LoadingFrame.BorderSizePixel = 0
     LoadingFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
-    LoadingFrame.Size = UDim2.new(0, 200, 0, 80)
+    LoadingFrame.Size = UDim2.new(0, 250, 0, 100)
     
     local loadingCorner = Instance.new("UICorner")
     loadingCorner.CornerRadius = UDim.new(0, 10)
@@ -205,12 +207,22 @@ local function CreateLoadingAnimation(duration, text)
     LoadingText.Name = "LoadingText"
     LoadingText.Parent = LoadingFrame
     LoadingText.BackgroundTransparency = 1
-    LoadingText.Position = UDim2.new(0, 0, 0, 15)
+    LoadingText.Position = UDim2.new(0, 0, 0, 10)
     LoadingText.Size = UDim2.new(1, 0, 0, 25)
     LoadingText.Font = Enum.Font.GothamBold
     LoadingText.Text = text
     LoadingText.TextColor3 = Color3.fromRGB(255, 203, 51)
     LoadingText.TextSize = 14
+    
+    LoadingTime.Name = "LoadingTime"
+    LoadingTime.Parent = LoadingFrame
+    LoadingTime.BackgroundTransparency = 1
+    LoadingTime.Position = UDim2.new(0, 0, 0, 35)
+    LoadingTime.Size = UDim2.new(1, 0, 0, 20)
+    LoadingTime.Font = Enum.Font.Gotham
+    LoadingTime.Text = "Осталось: 60 секунд"
+    LoadingTime.TextColor3 = Color3.fromRGB(255, 255, 255)
+    LoadingTime.TextSize = 12
     
     LoadingBar.Name = "LoadingBar"
     LoadingBar.Parent = LoadingFrame
@@ -218,7 +230,7 @@ local function CreateLoadingAnimation(duration, text)
     LoadingBar.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
     LoadingBar.BorderSizePixel = 0
     LoadingBar.Position = UDim2.new(0.5, 0, 0.7, 0)
-    LoadingBar.Size = UDim2.new(0.8, 0, 0, 10)
+    LoadingBar.Size = UDim2.new(0.8, 0, 0, 12)
     
     local barCorner2 = Instance.new("UICorner")
     barCorner2.CornerRadius = UDim.new(0, 8)
@@ -234,13 +246,20 @@ local function CreateLoadingAnimation(duration, text)
     fillCorner2.CornerRadius = UDim.new(0, 8)
     fillCorner2.Parent = LoadingFill
     
-    local stepTime = duration / 100
-    for i = 1, 100 do
+    local totalTime = 60
+    local startTime = tick()
+
+ьае, [02.09.2025 0:27]
+for i = 1, 100 do
+        local elapsed = tick() - startTime
+        local remaining = totalTime - elapsed
+        LoadingTime.Text = "Осталось: " .. math.floor(remaining) .. " секунд"
         LoadingFill.Size = UDim2.new(i/100, 0, 1, 0)
-        wait(stepTime)
+        wait(0.6)
     end
     
-    wait(0.3)
+    LoadingTime.Text = "Завершено!"
+    wait(0.5)
     LoadingUI:Destroy()
 end
 
@@ -252,8 +271,6 @@ WiFiButton.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
 WiFiButton.BorderSizePixel = 0
 WiFiButton.Size = UDim2.new(0.9, 0, 0, 40)
 WiFiButton.Position = UDim2.new(0.05, 0, 0.1, 0)
-
-ьае, [01.09.2025 16:33]
 WiFiButton.Font = Enum.Font.Gotham
 WiFiButton.Text = "Wi-Fi Pinch: OFF"
 WiFiButton.TextColor3 = Color3.fromRGB(255, 100, 100)
@@ -277,16 +294,15 @@ WiFiButton.MouseButton1Click:Connect(function()
     if wifiEnabled then
         WiFiButton.Text = "Wi-Fi Pinch: ON"
         WiFiButton.TextColor3 = Color3.fromRGB(100, 255, 100)
-        
-        CreateLoadingAnimation(3, "Инициализация...")
+        CreateLoadingAnimation("Инициализация Wi-Fi Pinch...")
         print("Wi-Fi pinch АКТИВИРОВАН!")
-        
     else
         WiFiButton.Text = "Wi-Fi Pinch: OFF"
         WiFiButton.TextColor3 = Color3.fromRGB(255, 100, 100)
         print("Wi-Fi pinch ОТКЛЮЧЕН!")
     end
 end)
+
 local autoskipEnabled = false
 local AutoskipButton = Instance.new("TextButton")
 AutoskipButton.Name = "AutoskipButton"
@@ -299,6 +315,7 @@ AutoskipButton.Font = Enum.Font.Gotham
 AutoskipButton.Text = "Autoskip: OFF"
 AutoskipButton.TextColor3 = Color3.fromRGB(255, 100, 100)
 AutoskipButton.TextSize = 14
+
 local autoskipCorner = Instance.new("UICorner")
 autoskipCorner.CornerRadius = UDim.new(0, 8)
 autoskipCorner.Parent = AutoskipButton
@@ -317,10 +334,8 @@ AutoskipButton.MouseButton1Click:Connect(function()
     if autoskipEnabled then
         AutoskipButton.Text = "Autoskip: ON"
         AutoskipButton.TextColor3 = Color3.fromRGB(100, 255, 100)
-        
-        CreateLoadingAnimation(5, "Инициализация...")
+        CreateLoadingAnimation("Инициализация Autoskip...")
         print("Autoskip АКТИВИРОВАН!")
-        
     else
         AutoskipButton.Text = "Autoskip: OFF"
         AutoskipButton.TextColor3 = Color3.fromRGB(255, 100, 100)
