@@ -1,0 +1,390 @@
+local TweenService = game:GetService("TweenService")
+local player = game.Players.LocalPlayer or game:GetService("Players").LocalPlayer
+while not player do wait() player = game.Players.LocalPlayer or game:GetService("Players").LocalPlayer end
+local PlayerGui = player:WaitForChild("PlayerGui")
+if PlayerGui:FindFirstChild("LoadingMenu") then
+    PlayerGui.LoadingMenu:Destroy()
+end
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "LoadingMenu"
+ScreenGui.Parent = PlayerGui
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+local Frame = Instance.new("Frame")
+Frame.Parent = ScreenGui
+Frame.Size = UDim2.new(0, 380, 0, 220)
+Frame.Position = UDim2.new(0.5, -190, 0.5, -110)
+Frame.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+Frame.BorderSizePixel = 0
+Frame.BackgroundTransparency = 0.1
+local UICorner = Instance.new("UICorner", Frame)
+UICorner.CornerRadius = UDim.new(0, 14)
+local BackgroundGradient = Instance.new("UIGradient", Frame)
+BackgroundGradient.Color = ColorSequence.new{
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(45, 15, 75)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(20, 30, 60))
+}
+BackgroundGradient.Rotation = -15
+local TopBar = Instance.new("Frame", Frame)
+TopBar.Size = UDim2.new(1, 0, 0, 40)
+TopBar.Position = UDim2.new(0, 0, 0, 0)
+TopBar.BackgroundColor3 = Color3.fromRGB(35, 35, 50)
+TopBar.BorderSizePixel = 0
+local TopBarCorner = Instance.new("UICorner", TopBar)
+TopBarCorner.CornerRadius = UDim.new(0, 14)
+local Title = Instance.new("TextLabel", TopBar)
+Title.Text = "TRADELOCK v2.0"
+Title.Font = Enum.Font.GothamBlack
+Title.TextSize = 18
+Title.TextColor3 = Color3.fromRGB(220, 220, 255)
+Title.BackgroundTransparency = 1
+Title.Position = UDim2.new(0, 20, 0, 0)
+Title.Size = UDim2.new(0, 200, 1, 0)
+Title.TextXAlignment = Enum.TextXAlignment.Left
+local SettingsButton = Instance.new("ImageButton", TopBar)
+SettingsButton.Size = UDim2.new(0, 24, 0, 24)
+SettingsButton.Position = UDim2.new(1, -60, 0.5, -12)
+SettingsButton.BackgroundTransparency = 1
+SettingsButton.Image = "rbxassetid://6031280882"
+SettingsButton.ImageColor3 = Color3.fromRGB(200, 200, 220)
+SettingsButton.AutoButtonColor = false
+local CloseButton = Instance.new("ImageButton", TopBar)
+CloseButton.Size = UDim2.new(0, 24, 0, 24)
+CloseButton.Position = UDim2.new(1, -30, 0.5, -12)
+CloseButton.BackgroundTransparency = 1
+CloseButton.Image = "rbxassetid://6031094678"
+CloseButton.ImageColor3 = Color3.fromRGB(200, 200, 220)
+CloseButton.AutoButtonColor = false
+local LoadingBarContainer = Instance.new("Frame", Frame)
+LoadingBarContainer.BackgroundTransparency = 1
+LoadingBarContainer.Position = UDim2.new(0, 20, 1, -45)
+LoadingBarContainer.Size = UDim2.new(1, -40, 0, 25)
+local LoadingText = Instance.new("TextLabel", LoadingBarContainer)
+LoadingText.Text = "Initializing..."
+LoadingText.Font = Enum.Font.GothamMedium
+LoadingText.TextSize = 12
+LoadingText.TextColor3 = Color3.fromRGB(180, 180, 200)
+LoadingText.BackgroundTransparency = 1
+LoadingText.Position = UDim2.new(0, 0, 0, -20)
+LoadingText.Size = UDim2.new(1, 0, 0, 15)
+LoadingText.TextXAlignment = Enum.TextXAlignment.Left
+local LoadingBarBackground = Instance.new("Frame", LoadingBarContainer)
+LoadingBarBackground.BackgroundColor3 = Color3.fromRGB(40, 40, 60)
+LoadingBarBackground.Position = UDim2.new(0, 0, 0, 0)
+LoadingBarBackground.Size = UDim2.new(1, 0, 1, 0)
+LoadingBarBackground.BorderSizePixel = 0
+local bgCorner = Instance.new("UICorner", LoadingBarBackground)
+bgCorner.CornerRadius = UDim.new(0, 8)
+local LoadingBar = Instance.new("Frame", LoadingBarBackground)
+LoadingBar.BackgroundColor3 = Color3.fromRGB(120, 80, 255)
+LoadingBar.Size = UDim2.new(0, 0, 1, 0)
+LoadingBar.BorderSizePixel = 0
+local barCorner = Instance.new("UICorner", LoadingBar)
+barCorner.CornerRadius = UDim.new(0, 8)
+local GlowEffect = Instance.new("ImageLabel", LoadingBar)
+GlowEffect.Size = UDim2.new(1, 0, 2, 0)
+GlowEffect.Position = UDim2.new(0, 0, -0.5, 0)
+GlowEffect.BackgroundTransparency = 1
+GlowEffect.Image = "rbxassetid://8992231221"
+GlowEffect.ImageColor3 = Color3.fromRGB(120, 80, 255)
+GlowEffect.ImageTransparency = 0.7
+GlowEffect.ScaleType = Enum.ScaleType.Slice
+GlowEffect.SliceScale = 0.1
+local ButtonsContainer = Instance.new("Frame", Frame)
+ButtonsContainer.BackgroundTransparency = 1
+ButtonsContainer.Position = UDim2.new(0, 20, 0, 50)
+ButtonsContainer.Size = UDim2.new(1, -40, 0, 120)
+local function createToggleButton(parent, posY, textKey)
+    local buttonContainer = Instance.new("Frame", parent)
+    buttonContainer.Size = UDim2.new(1, 0, 0, 35)
+    buttonContainer.Position = UDim2.new(0, 0, 0, posY)
+    buttonContainer.BackgroundTransparency = 1
+    local label = Instance.new("TextLabel", buttonContainer)
+    label.Size = UDim2.new(0, 120, 1, 0)
+    label.Position = UDim2.new(0, 0, 0, 0)
+    label.BackgroundTransparency = 1
+    label.Font = Enum.Font.GothamSemibold
+    label.TextSize = 14
+    label.TextColor3 = Color3.fromRGB(220, 220, 240)
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.Text = textKey
+    local button = Instance.new("TextButton", buttonContainer)
+    button.Size = UDim2.new(0, 70, 0, 30)
+    button.Position = UDim2.new(1, -70, 0.5, -15)
+    button.Font = Enum.Font.GothamBold
+    button.TextSize = 12
+    button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    button.BackgroundColor3 = Color3.fromRGB(80, 30, 150)
+    button.Text = "OFF"
+    button.AutoButtonColor = false
+    
+    local buttonCorner = Instance.new("UICorner", button)
+    buttonCorner.CornerRadius = UDim.new(0, 8)
+    
+    local buttonStroke = Instance.new("UIStroke", button)
+    buttonStroke.Color = Color3.fromRGB(120, 80, 200)
+    buttonStroke.Thickness = 1.5
+    local loadingBg = Instance.new("Frame", buttonContainer)
+    loadingBg.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
+    loadingBg.Position = UDim2.new(1, -70, 0.5, -10)
+    loadingBg.Size = UDim2.new(0, 70, 0, 20)
+    loadingBg.BorderSizePixel = 0
+    loadingBg.Visible = false
+    local loadingBgCorner = Instance.new("UICorner", loadingBg)
+    loadingBgCorner.CornerRadius = UDim.new(0, 6)
+    
+    local loadingBgStroke = Instance.new("UIStroke", loadingBg)
+    loadingBgStroke.Color = Color3.fromRGB(80, 80, 120)
+    loadingBgStroke.Thickness = 1
+    local loadingBar = Instance.new("Frame", loadingBg)
+    loadingBar.BackgroundColor3 = Color3.fromRGB(100, 150, 255)
+    loadingBar.Size = UDim2.new(0, 0, 1, 0)
+    loadingBar.BorderSizePixel = 0
+    local loadingBarCorner = Instance.new("UICorner", loadingBar)
+    loadingBarCorner.CornerRadius = UDim.new(0, 6)
+    return {
+        button = button,
+        label = label,
+        textKey = textKey,
+        loadingBg = loadingBg,
+        loadingBar = loadingBar,
+        toggled = false,
+        tween = nil
+    }
+end
+local TradeLag = createToggleButton(ButtonsContainer, 0, "TradeLag")
+local TradeVacuum = createToggleButton(ButtonsContainer, 40, "TradeVacuum")
+local TimeAutoSkip = createToggleButton(ButtonsContainer, 80, "TimeAutoSkip")
+local function runLoadingAnimation(toggleData)
+    if toggleData.loadingBg.Visible then return end
+    toggleData.loadingBg.Visible = true
+    toggleData.loadingBar.Size = UDim2.new(0, 0, 1, 0)
+    local duration = 3
+    toggleData.button.Visible = false
+    toggleData.button.Text = "Loading..."
+    toggleData.button.BackgroundColor3 = Color3.fromRGB(70, 70, 90)
+    local glowTween = TweenService:Create(GlowEffect, TweenInfo.new(0.3), {ImageTransparency = 0.4})
+    glowTween:Play()
+    toggleData.tween = TweenService:Create(toggleData.loadingBar, TweenInfo.new(duration, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = UDim2.new(1, 0, 1, 0)})
+    toggleData.tween:Play()
+    toggleData.tween.Completed:Connect(function()
+        toggleData.loadingBg.Visible = false
+        toggleData.toggled = not toggleData.toggled
+        
+        local colorTween = TweenService:Create(toggleData.button, TweenInfo.new(0.3), {
+            BackgroundColor3 = toggleData.toggled and Color3.fromRGB(50, 180, 80) or Color3.fromRGB(80, 30, 150)
+        })
+        colorTween:Play()
+        
+        toggleData.button.Text = toggleData.toggled and "ON" or "OFF"
+        toggleData.button.Visible = true
+        
+        local glowTweenOut = TweenService:Create(GlowEffect, TweenInfo.new(0.5), {ImageTransparency = 0.7})
+        glowTweenOut:Play()
+    end)
+end
+TradeLag.button.MouseButton1Click:Connect(function()
+    if not TradeLag.loadingBg.Visible then
+        runLoadingAnimation(TradeLag)
+    end
+end)
+TradeVacuum.button.MouseButton1Click:Connect(function()
+    if not TradeVacuum.loadingBg.Visible then
+        runLoadingAnimation(TradeVacuum)
+    end
+end)
+TimeAutoSkip.button.MouseButton1Click:Connect(function()
+    if not TimeAutoSkip.loadingBg.Visible then
+        runLoadingAnimation(TimeAutoSkip)
+    end
+end)
+LoadingBarContainer.Visible = true
+local loadingTween = TweenService:Create(LoadingBar, TweenInfo.new(4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = UDim2.new(1, 0, 1, 0)})
+loadingTween:Play()
+loadingTween.Completed:Connect(function()
+    LoadingBarContainer.Visible = false
+    ButtonsContainer.Visible = true
+end)
+ButtonsContainer.Visible = false
+local MiniIcon = Instance.new("TextButton", ScreenGui)
+MiniIcon.Size = UDim2.new(0, 100, 0, 35)
+MiniIcon.Position = UDim2.new(1, -110, 0, 20)
+MiniIcon.BackgroundColor3 = Color3.fromRGB(35, 35, 50)
+MiniIcon.TextColor3 = Color3.fromRGB(220, 220, 240)
+MiniIcon.Text = "TRADELOCK"
+MiniIcon.Font = Enum.Font.GothamMedium
+MiniIcon.TextSize = 12
+MiniIcon.Visible = false
+MiniIcon.AutoButtonColor = true
+MiniIcon.BorderSizePixel = 0
+local miniCorner = Instance.new("UICorner", MiniIcon)
+miniCorner.CornerRadius = UDim.new(0, 8)
+local miniStroke = Instance.new("UIStroke", MiniIcon)
+miniStroke.Color = Color3.fromRGB(80, 80, 120)
+miniStroke.Thickness = 1.5
+CloseButton.MouseButton1Click:Connect(function()
+    local hideTween = TweenService:Create(Frame, TweenInfo.new(0.3), {Position = UDim2.new(0.5, -190, 1.5, -110)})
+    hideTween:Play()
+    hideTween.Completed:Connect(function()
+        Frame.Visible = false
+        MiniIcon.Visible = true
+    end)
+end)
+MiniIcon.MouseButton1Click:Connect(function()
+    MiniIcon.Visible = false
+    Frame.Visible = true
+    local showTween = TweenService:Create(Frame, TweenInfo.new(0.3), {Position = UDim2.new(0.5, -190, 0.5, -110)})
+    showTween:Play()
+end)
+local SettingsFrame = Instance.new("Frame", ScreenGui)
+SettingsFrame.Size = UDim2.new(0, 320, 0, 200)
+SettingsFrame.Position = UDim2.new(0.5, -160, 0.5, -100)
+SettingsFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
+SettingsFrame.Visible = false
+SettingsFrame.BorderSizePixel = 0
+SettingsFrame.BackgroundTransparency = 0.1
+local sCorner = Instance.new("UICorner", SettingsFrame)
+sCorner.CornerRadius = UDim.new(0, 14)
+local sGradient = Instance.new("UIGradient", SettingsFrame)
+sGradient.Color = ColorSequence.new{
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(45, 15, 75)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(20, 30, 60))
+}
+sGradient.Rotation = -15
+local SettingsTopBar = Instance.new("Frame", SettingsFrame)
+SettingsTopBar.Size = UDim2.new(1, 0, 0, 40)
+SettingsTopBar.Position = UDim2.new(0, 0, 0, 0)
+SettingsTopBar.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
+SettingsTopBar.BorderSizePixel = 0
+local sTopCorner = Instance.new("UICorner", SettingsTopBar)
+sTopCorner.CornerRadius = UDim.new(0, 14)
+local SettingsTitle = Instance.new("TextLabel", SettingsTopBar)
+SettingsTitle.Size = UDim2.new(1, -40, 1, 0)
+SettingsTitle.Position = UDim2.new(0, 20, 0, 0)
+SettingsTitle.BackgroundTransparency = 1
+SettingsTitle.Font = Enum.Font.GothamBlack
+SettingsTitle.TextSize = 16
+SettingsTitle.TextColor3 = Color3.fromRGB(220, 220, 255)
+SettingsTitle.Text = "SETTINGS"
+SettingsTitle.TextXAlignment = Enum.TextXAlignment.Left
+local CheckStatusButton = Instance.new("TextButton", SettingsFrame)
+CheckStatusButton.Size = UDim2.new(0, 240, 0, 40)
+CheckStatusButton.Position = UDim2.new(0.5, -120, 0, 60)
+CheckStatusButton.BackgroundColor3 = Color3.fromRGB(60, 100, 200)
+CheckStatusButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+CheckStatusButton.Font = Enum.Font.GothamBold
+CheckStatusButton.TextSize = 14
+CheckStatusButton.Text = "Check status"
+CheckStatusButton.AutoButtonColor = false
+local statusCorner = Instance.new("UICorner", CheckStatusButton)
+statusCorner.CornerRadius = UDim.new(0, 10)
+local statusStroke = Instance.new("UIStroke", CheckStatusButton)
+statusStroke.Color = Color3.fromRGB(100, 140, 240)
+statusStroke.Thickness = 1.5
+local statusLoadingBg = Instance.new("Frame", SettingsFrame)
+statusLoadingBg.BackgroundColor3 = Color3.fromRGB(45, 45, 65)
+statusLoadingBg.Position = UDim2.new(0.5, -120, 0, 110)
+statusLoadingBg.Size = UDim2.new(0, 240, 0, 20)
+statusLoadingBg.BorderSizePixel = 0
+statusLoadingBg.Visible = false
+local statusBgCorner = Instance.new("UICorner", statusLoadingBg)
+statusBgCorner.CornerRadius = UDim.new(0, 8)
+local statusLoadingBar = Instance.new("Frame", statusLoadingBg)
+statusLoadingBar.BackgroundColor3 = Color3.fromRGB(100, 180, 255)
+statusLoadingBar.Size = UDim2.new(0, 0, 1, 0)
+statusLoadingBar.BorderSizePixel = 0
+local statusBarCorner = Instance.new("UICorner", statusLoadingBar)
+statusBarCorner.CornerRadius = UDim.new(0, 8)
+local BackButton = Instance.new("TextButton", SettingsFrame)
+BackButton.Size = UDim2.new(0, 240, 0, 40)
+BackButton.Position = UDim2.new(0.5, -120, 0, 140)
+BackButton.BackgroundColor3 = Color3.fromRGB(180, 60, 60)
+BackButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+BackButton.Font = Enum.Font.GothamBold
+BackButton.TextSize = 14
+BackButton.Text = "Back"
+local backCorner = Instance.new("UICorner", BackButton)
+backCorner.CornerRadius = UDim.new(0, 10)
+local backStroke = Instance.new("UIStroke", BackButton)
+backStroke.Color = Color3.fromRGB(220, 80, 80)
+backStroke.Thickness = 1.5
+local isPopupActive = false
+local function showPopupMessage(text)
+    if isPopupActive then return end
+    isPopupActive = true
+    
+    local popup = Instance.new("Frame", ScreenGui)
+    popup.Size = UDim2.new(0, 300, 0, 70)
+    popup.Position = UDim2.new(0.5, -150, 0.2, 0)
+    popup.BackgroundColor3 = Color3.fromRGB(40, 40, 60)
+    popup.BorderSizePixel = 0
+    
+    local popupCorner = Instance.new("UICorner", popup)
+    popupCorner.CornerRadius = UDim.new(0, 12)
+    
+    local popupStroke = Instance.new("UIStroke", popup)
+    popupStroke.Color = Color3.fromRGB(80, 80, 120)
+    popupStroke.Thickness = 2
+    
+    local popupText = Instance.new("TextLabel", popup)
+    popupText.Size = UDim2.new(1, -20, 1, -20)
+    popupText.Position = UDim2.new(0, 10, 0, 10)
+    popupText.BackgroundTransparency = 1
+    popupText.TextColor3 = Color3.fromRGB(220, 220, 240)
+    popupText.Text = text
+    popupText.Font = Enum.Font.GothamMedium
+    popupText.TextWrapped = true
+    popupText.TextSize = 14
+    
+    popup.BackgroundTransparency = 1
+    popupStroke.Transparency = 1
+    popupText.TextTransparency = 1
+    
+    local fadeIn = TweenService:Create(popup, TweenInfo.new(0.5), {BackgroundTransparency = 0.1})
+    local fadeInStroke = TweenService:Create(popupStroke, TweenInfo.new(0.5), {Transparency = 0})
+    local fadeInText = TweenService:Create(popupText, TweenInfo.new(0.5), {TextTransparency = 0})
+    
+    fadeIn:Play()
+    fadeInStroke:Play()
+    fadeInText:Play()
+    
+    task.wait(3)
+    
+    local fadeOut = TweenService:Create(popup, TweenInfo.new(0.5), {BackgroundTransparency = 1})
+    local fadeOutStroke = TweenService:Create(popupStroke, TweenInfo.new(0.5), {Transparency = 1})
+    local fadeOutText = TweenService:Create(popupText, TweenInfo.new(0.5), {TextTransparency = 1})
+    
+    fadeOut:Play()
+    fadeOutStroke:Play()
+    fadeOutText:Play()
+    
+    fadeOut.Completed:Connect(function()
+        popup:Destroy()
+        isPopupActive = false
+    end)
+end
+CheckStatusButton.MouseButton1Click:Connect(function()
+    if statusLoadingBg.Visible then return end
+    
+    CheckStatusButton.Text = "Checking..."
+    CheckStatusButton.BackgroundColor3 = Color3.fromRGB(80, 80, 100)
+    statusLoadingBg.Visible = true
+    statusLoadingBar.Size = UDim2.new(0, 0, 1, 0)
+    
+    local statusTween = TweenService:Create(statusLoadingBar, TweenInfo.new(3, Enum.EasingStyle.Quad), {Size = UDim2.new(1, 0, 1, 0)})
+    statusTween:Play()
+    
+    statusTween.Completed:Connect(function()
+        statusLoadingBg.Visible = false
+        CheckStatusButton.Text = "Check status"
+        CheckStatusButton.BackgroundColor3 = Color3.fromRGB(60, 100, 200)
+        showPopupMessage("✓ Script status: Online\nAll systems operational")
+    end)
+end)
+BackButton.MouseButton1Click:Connect(function()
+    SettingsFrame.Visible = false
+    Frame.Visible = true
+end)
+SettingsButton.MouseButton1Click:Connect(function()
+    Frame.Visible = false
+    SettingsFrame.Visible = true
+end)
